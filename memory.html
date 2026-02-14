@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>تست حافظه | BrainGames</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazir', 'Tahoma', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .back-btn {
+            background: #764ba2;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .back-btn:hover {
+            background: #5a3780;
+            transform: translateY(-2px);
+        }
+
+        .back-btn:active {
+            transform: translateY(0);
+        }
+
+        h2 {
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .settings-panel {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .settings-title {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .setting-group {
+            margin-bottom: 20px;
+        }
+
+        .setting-label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .difficulty-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .difficulty-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .difficulty-btn:active {
+            transform: translateY(0);
+        }
+
+        .difficulty-btn.easy.active {
+            background: #27ae60;
+            color: white;
+            border-color: #27ae60;
+        }
+
+        .difficulty-btn.medium.active {
+            background: #f39c12;
+            color: white;
+            border-color: #f39c12;
+        }
+
+        .difficulty-btn.hard.active {
+            background: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+
+        .start-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .start-btn:active {
+            transform: translateY(0);
+        }
+
+        .game-area {
+            display: none;
+        }
+
+        .game-area.active {
+            display: block;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .moves, .pairs, .mistakes {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .moves span, .pairs span, .mistakes span {
+            background: white;
+            color: #764ba2;
+            padding: 5px 12px;
+            border-radius: 50px;
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+
+        .memory-grid {
+            display: grid;
+            gap: 10px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+
+        .memory-card {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform-style: preserve-3d;
+            position: relative;
+        }
+
+        .memory-card::before {
+            content: "?";
+            position: absolute;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            font-size: 2.5rem;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .memory-card.flipped::before {
+            opacity: 0;
+            transform: rotateY(180deg);
+        }
+
+        .memory-card.flipped {
+            background: white;
+            color: #333;
+            border: 2px solid #764ba2;
+        }
+
+        .memory-card.matched {
+            background: #27ae60;
+            color: white;
+            cursor: default;
+            opacity: 0.7;
+            border: 2px solid #27ae60;
+        }
+
+        .memory-card.matched::before {
+            display: none;
+        }
+
+        .memory-card.disabled {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .memory-card:active:not(.flipped):not(.matched):not(.disabled) {
+            transform: scale(0.95);
+        }
+
+        .timer-bar {
+            background: #f0f0f0;
+            border-radius: 10px;
+            height: 10px;
+            margin: 10px 0 20px 0;
+            overflow: hidden;
+        }
+
+        .timer-progress {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 100%;
+            transition: width 0.1s linear;
+        }
+
+        .reset-btn {
+            background: #764ba2;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .reset-btn:hover {
+            background: #5a3780;
+            transform: translateY(-2px);
+        }
+
+        .reset-btn:active {
+            transform: translateY(0);
+        }
+
+        .win-message {
+            text-align: center;
+            font-size: 1.5rem;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f1c40f 0%, #e67e22 100%);
+            color: white;
+            border-radius: 15px;
+            animation: pop 0.5s;
+            font-weight: bold;
+        }
+
+        .lose-message {
+            text-align: center;
+            font-size: 1.5rem;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border-radius: 15px;
+            animation: pop 0.5s;
+            font-weight: bold;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* ===== ریسپانسیو برای موبایل ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+            }
+
+            .back-btn {
+                padding: 6px 15px;
+                font-size: 0.9rem;
+            }
+
+            .settings-panel {
+                padding: 20px;
+            }
+
+            .settings-title {
+                font-size: 1.1rem;
+            }
+
+            .difficulty-btn {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            .start-btn {
+                padding: 12px;
+                font-size: 1rem;
+            }
+
+            .stats-bar {
+                padding: 12px 15px;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .moves, .pairs, .mistakes {
+                font-size: 0.9rem;
+            }
+
+            .moves span, .pairs span, .mistakes span {
+                padding: 4px 10px;
+                font-size: 1rem;
+            }
+
+            .memory-card {
+                font-size: 2rem;
+            }
+
+            .memory-card::before {
+                font-size: 2rem;
+            }
+
+            .win-message, .lose-message {
+                font-size: 1.2rem;
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+                border-radius: 20px;
+            }
+
+            .header {
+                margin-bottom: 20px;
+            }
+
+            h2 {
+                font-size: 1.1rem;
+            }
+
+            .back-btn {
+                padding: 5px 12px;
+                font-size: 0.8rem;
+            }
+
+            .settings-panel {
+                padding: 15px;
+            }
+
+            .difficulty-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .difficulty-btn {
+                width: 100%;
+                padding: 12px;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .memory-grid {
+                gap: 8px;
+            }
+
+            .memory-card {
+                font-size: 1.5rem;
+            }
+
+            .memory-card::before {
+                font-size: 1.5rem;
+            }
+
+            .win-message, .lose-message {
+                font-size: 1rem;
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .memory-card {
+                font-size: 1.2rem;
+            }
+
+            .memory-card::before {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">🔙 بازگشت</button>
+            <h2>🃏 تست حافظه</h2>
+        </div>
+
+        <!-- بخش تنظیمات -->
+        <div class="settings-panel" id="settingsPanel">
+            <h3 class="settings-title">⚙️ تنظیمات بازی</h3>
+
+            <div class="setting-group">
+                <div class="setting-label">سطح سختی:</div>
+                <div class="difficulty-buttons">
+                    <button class="difficulty-btn easy" onclick="setDifficulty('easy')" id="diffEasy">🌟 آسان (۴×۳)</button>
+                    <button class="difficulty-btn medium" onclick="setDifficulty('medium')" id="diffMedium">⭐⭐ متوسط (۴×۴)</button>
+                    <button class="difficulty-btn hard" onclick="setDifficulty('hard')" id="diffHard">⭐⭐⭐ سخت (۶×۶)</button>
+                </div>
+            </div>
+
+            <button class="start-btn" onclick="startGame()">🎮 شروع بازی</button>
+        </div>
+
+        <!-- بخش بازی -->
+        <div class="game-area" id="gameArea">
+            <div class="timer-bar">
+                <div class="timer-progress" id="timerProgress"></div>
+            </div>
+            
+            <div class="stats-bar">
+                <div class="moves">حرکت: <span id="moveCount">0</span></div>
+                <div class="mistakes">❌ اشتباه: <span id="mistakeCount">0</span>/5</div>
+                <div class="pairs">جفت‌ها: <span id="pairCount">0</span>/<span id="totalPairs">8</span></div>
+            </div>
+
+            <div class="memory-grid" id="memoryGrid"></div>
+
+            <div class="win-message" id="winMessage" style="display: none;">
+                🎉 تبریک! شما برنده شدید! 🎉
+            </div>
+
+            <div class="lose-message" id="loseMessage" style="display: none;">
+                💔 متأسفیم! شما باختید! (۵ اشتباه) 💔
+            </div>
+
+            <button class="reset-btn" onclick="resetGame()">🔄 بازی جدید</button>
+        </div>
+    </div>
+
+    <script>
+        // متغیرها
+        let difficulty = 'medium';
+        let cards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let moves = 0;
+        let mistakes = 0;
+        let canFlip = false;
+        let gameStarted = false;
+        let gameActive = true;
+        let gridSize = { rows: 4, cols: 4 };
+        let timerInterval;
+        let timeLeft = 2;
+
+        // آیکون‌ها برای کارت‌ها (ایموجی خوک حذف شد)
+        const icons = [
+            '🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼',
+            '🐨', '🐯', '🦁', '🐮', '🐸', '🐙', '🦄', '🐧',
+            '🐦', '🐤', '🐝', '🐞', '🦋', '🐌', '🐠', '🐡',
+            '🐬', '🐳', '🐋', '🦈', '🦭', '🐊', '🐅', '🐆',
+            '🦓', '🦍', '🦧', '🦣', '🦛', '🦏', '🐪', '🐫',
+            '🦒', '🦘', '🦬', '🐃', '🐂', '🐄', '🐎', '🦜'
+        ];
+
+        // تنظیم سطح سختی
+        function setDifficulty(level) {
+            difficulty = level;
+            document.getElementById('diffEasy').classList.remove('active');
+            document.getElementById('diffMedium').classList.remove('active');
+            document.getElementById('diffHard').classList.remove('active');
+            document.getElementById(`diff${level.charAt(0).toUpperCase() + level.slice(1)}`).classList.add('active');
+
+            switch(level) {
+                case 'easy':
+                    gridSize = { rows: 3, cols: 4 };
+                    break;
+                case 'medium':
+                    gridSize = { rows: 4, cols: 4 };
+                    break;
+                case 'hard':
+                    gridSize = { rows: 6, cols: 6 };
+                    break;
+            }
+            document.getElementById('totalPairs').textContent = (gridSize.rows * gridSize.cols) / 2;
+        }
+
+        // شروع بازی
+        function startGame() {
+            document.getElementById('settingsPanel').style.display = 'none';
+            document.getElementById('gameArea').classList.add('active');
+            resetGame();
+        }
+
+        // ساختن کارت‌ها
+        function createCards() {
+            const totalCards = gridSize.rows * gridSize.cols;
+            const pairCount = totalCards / 2;
+            
+            // انتخاب آیکون‌های تصادفی
+            const selectedIcons = [];
+            for (let i = 0; i < pairCount; i++) {
+                const randomIcon = icons[Math.floor(Math.random() * icons.length)];
+                selectedIcons.push(randomIcon, randomIcon);
+            }
+
+            // شافل کردن کارت‌ها
+            for (let i = selectedIcons.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [selectedIcons[i], selectedIcons[j]] = [selectedIcons[j], selectedIcons[i]];
+            }
+
+            // ساخت کارت‌ها
+            cards = selectedIcons.map((icon, index) => ({
+                id: index,
+                icon: icon,
+                isFlipped: true,
+                isMatched: false
+            }));
+        }
+
+        // نمایش گرید
+        function renderGrid() {
+            const grid = document.getElementById('memoryGrid');
+            grid.style.gridTemplateColumns = `repeat(${gridSize.cols}, 1fr)`;
+            
+            let html = '';
+            cards.forEach((card, index) => {
+                let classes = 'memory-card';
+                if (card.isFlipped) classes += ' flipped';
+                if (card.isMatched) classes += ' matched';
+                if (!canFlip || !gameActive) classes += ' disabled';
+                
+                html += `<div class="${classes}" data-index="${index}" onclick="flipCard(${index})">
+                    ${card.isFlipped || card.isMatched ? card.icon : ''}
+                </div>`;
+            });
+            
+            grid.innerHTML = html;
+        }
+
+        // تایمر ۲ ثانیه
+        function startTimer() {
+            timeLeft = 2;
+            canFlip = false;
+            gameActive = true;
+            const timerProgress = document.getElementById('timerProgress');
+            timerProgress.style.width = '100%';
+            
+            timerInterval = setInterval(() => {
+                timeLeft -= 0.1;
+                const percent = (timeLeft / 2) * 100;
+                timerProgress.style.width = percent + '%';
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    cards.forEach(card => {
+                        card.isFlipped = false;
+                    });
+                    canFlip = true;
+                    gameStarted = true;
+                    renderGrid();
+                }
+            }, 100);
+        }
+
+        // برگردوندن کارت
+        function flipCard(index) {
+            if (!canFlip || !gameStarted || !gameActive) return;
+            
+            const card = cards[index];
+            if (card.isFlipped || card.isMatched) return;
+            
+            if (flippedCards.length === 2) return;
+
+            card.isFlipped = true;
+            
+            if (flippedCards.length === 0) {
+                flippedCards = [index];
+            } else {
+                flippedCards.push(index);
+                moves++;
+                document.getElementById('moveCount').textContent = moves;
+                
+                checkMatch();
+            }
+            
+            renderGrid();
+        }
+
+        // بررسی جفت بودن کارت‌ها
+        function checkMatch() {
+            const [index1, index2] = flippedCards;
+            const card1 = cards[index1];
+            const card2 = cards[index2];
+
+            if (card1.icon === card2.icon) {
+                // جفت شدن
+                card1.isMatched = true;
+                card2.isMatched = true;
+                matchedPairs++;
+                
+                document.getElementById('pairCount').textContent = matchedPairs;
+                
+                if (matchedPairs === (gridSize.rows * gridSize.cols) / 2) {
+                    document.getElementById('winMessage').style.display = 'block';
+                    gameActive = false;
+                }
+                
+                flippedCards = [];
+                renderGrid();
+            } else {
+                // جفت نشدن - اضافه کردن اشتباه
+                mistakes++;
+                document.getElementById('mistakeCount').textContent = mistakes;
+                
+                // بررسی شرط باخت (۵ اشتباه)
+                if (mistakes >= 5) {
+                    gameActive = false;
+                    canFlip = false;
+                    document.getElementById('loseMessage').style.display = 'block';
+                    renderGrid();
+                    return;
+                }
+                
+                canFlip = false;
+                setTimeout(() => {
+                    card1.isFlipped = false;
+                    card2.isFlipped = false;
+                    flippedCards = [];
+                    canFlip = true;
+                    renderGrid();
+                }, 1000);
+            }
+        }
+
+        // ریست کردن بازی
+        function resetGame() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            createCards();
+            flippedCards = [];
+            matchedPairs = 0;
+            moves = 0;
+            mistakes = 0;
+            gameStarted = false;
+            gameActive = true;
+            
+            document.getElementById('moveCount').textContent = '0';
+            document.getElementById('pairCount').textContent = '0';
+            document.getElementById('mistakeCount').textContent = '0';
+            document.getElementById('winMessage').style.display = 'none';
+            document.getElementById('loseMessage').style.display = 'none';
+            
+            renderGrid();
+            startTimer();
+        }
+
+        // بازگشت به صفحه اصلی
+        function goBack() {
+            window.location.href = '../index.html';
+        }
+
+        // مقداردهی اولیه
+        setDifficulty('medium');
+    </script>
+</body>
+</html>
