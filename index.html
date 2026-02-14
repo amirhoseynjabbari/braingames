@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>🧠 BrainGames | بازی‌های فکری</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazir', 'Tahoma', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: #764ba2;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .game-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-color: #764ba2;
+        }
+
+        .game-card:active {
+            transform: scale(0.98);
+        }
+
+        .game-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .game-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .game-card p {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .difficulty-tags {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .tag.easy {
+            background: #27ae60;
+        }
+
+        .tag.medium {
+            background: #f39c12;
+        }
+
+        .tag.hard {
+            background: #e74c3c;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            margin-top: 30px;
+            font-size: 1.2rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: auto;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .footer p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* ===== ریسپانسیو برای موبایل ===== */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px;
+                border-radius: 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .games-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .game-card {
+                padding: 15px;
+                display: flex;
+                align-items: center;
+                text-align: right;
+                gap: 15px;
+            }
+
+            .game-icon {
+                font-size: 2.5rem;
+                margin-bottom: 0;
+                min-width: 60px;
+            }
+
+            .game-card h3 {
+                font-size: 1.1rem;
+                margin-bottom: 5px;
+            }
+
+            .game-card p {
+                font-size: 0.85rem;
+                margin-bottom: 0;
+            }
+
+            .difficulty-tags {
+                justify-content: flex-start;
+                margin-top: 8px;
+            }
+
+            .btn {
+                padding: 12px 30px;
+                font-size: 1rem;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .game-card {
+                padding: 12px;
+            }
+
+            .game-icon {
+                font-size: 2rem;
+                min-width: 50px;
+            }
+
+            .game-card h3 {
+                font-size: 1rem;
+            }
+
+            .game-card p {
+                font-size: 0.8rem;
+            }
+
+            .tag {
+                padding: 3px 8px;
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .game-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .difficulty-tags {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 BrainGames</h1>
+            <p>مجموعه بازی‌های فکری برای تقویت ذهن</p>
+        </div>
+
+        <div class="games-grid">
+            <!-- بازی دوز -->
+            <div class="game-card" onclick="location.href='games/tictactoe.html'">
+                <div class="game-icon">⭕❌</div>
+                <div style="flex: 1;">
+                    <h3>دوز حرفه‌ای</h3>
+                    <p>بازی کلاسیک با ربات هوشمند و حالت دو نفره</p>
+                    <div class="difficulty-tags">
+                        <span class="tag easy">آسان</span>
+                        <span class="tag medium">متوسط</span>
+                        <span class="tag hard">سخت</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تست حافظه -->
+            <div class="game-card" onclick="location.href='games/memory.html'">
+                <div class="game-icon">🃏</div>
+                <div style="flex: 1;">
+                    <h3>تست حافظه</h3>
+                    <p>کارت‌های مشابه رو پیدا کن</p>
+                    <div class="difficulty-tags">
+                        <span class="tag easy">۴×۳</span>
+                        <span class="tag medium">۴×۴</span>
+                        <span class="tag hard">۶×۶</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- فلشکارت زبان -->
+            <div class="game-card" onclick="location.href='games/flashcards.html'">
+                <div class="game-icon">🔤</div>
+                <div style="flex: 1;">
+                    <h3>فلشکارت زبان</h3>
+                    <p>ترجمه کلمات انگلیسی</p>
+                    <div class="difficulty-tags">
+                        <span class="tag easy">مقدماتی</span>
+                        <span class="tag medium">متوسط</span>
+                        <span class="tag hard">پیشرفته</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تست ریاضی -->
+            <div class="game-card" onclick="location.href='games/math.html'">
+                <div class="game-icon">🔢</div>
+                <div style="flex: 1;">
+                    <h3>تست ریاضی و هوش</h3>
+                    <p>معادلات و سوالات هوش</p>
+                    <div class="difficulty-tags">
+                        <span class="tag easy">آسان</span>
+                        <span class="tag medium">متوسط</span>
+                        <span class="tag hard">سخت</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>برای شروع، روی هر بازی کلیک کن</p>
+        </div>
+    </div>
+</body>
+</html>
