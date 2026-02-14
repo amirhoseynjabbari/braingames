@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>دوز حرفه‌ای | BrainGames</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazir', 'Tahoma', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .back-btn {
+            background: #764ba2;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .back-btn:hover {
+            background: #5a3780;
+            transform: translateY(-2px);
+        }
+
+        .back-btn:active {
+            transform: translateY(0);
+        }
+
+        h2 {
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .settings-panel {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .settings-title {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .setting-group {
+            margin-bottom: 20px;
+        }
+
+        .setting-label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .mode-buttons, .difficulty-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .mode-btn, .difficulty-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .mode-btn:hover, .difficulty-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .mode-btn:active, .difficulty-btn:active {
+            transform: translateY(0);
+        }
+
+        .mode-btn.active {
+            background: #764ba2;
+            color: white;
+            border-color: #764ba2;
+        }
+
+        .difficulty-btn.active {
+            background: #764ba2;
+            color: white;
+            border-color: #764ba2;
+        }
+
+        .difficulty-btn.easy.active {
+            background: #27ae60;
+            border-color: #27ae60;
+        }
+
+        .difficulty-btn.medium.active {
+            background: #f39c12;
+            border-color: #f39c12;
+        }
+
+        .difficulty-btn.hard.active {
+            background: #e74c3c;
+            border-color: #e74c3c;
+        }
+
+        .start-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .start-btn:active {
+            transform: translateY(0);
+        }
+
+        .game-area {
+            display: none;
+        }
+
+        .game-area.active {
+            display: block;
+        }
+
+        .status-box {
+            text-align: center;
+            padding: 15px;
+            margin: 20px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 30px auto;
+            max-width: 300px;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border: none;
+            border-radius: 15px;
+            font-size: 3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .cell:hover:not(.disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .cell:active:not(.disabled) {
+            transform: scale(0.98);
+        }
+
+        .cell.x {
+            color: #e74c3c;
+        }
+
+        .cell.o {
+            color: #3498db;
+        }
+
+        .cell.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .reset-btn {
+            background: #764ba2;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .reset-btn:hover {
+            background: #5a3780;
+            transform: translateY(-2px);
+        }
+
+        .reset-btn:active {
+            transform: translateY(0);
+        }
+
+        .winner-message {
+            text-align: center;
+            font-size: 1.5rem;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f1c40f 0%, #e67e22 100%);
+            color: white;
+            border-radius: 15px;
+            animation: pop 0.5s;
+            font-weight: bold;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* ===== ریسپانسیو برای موبایل ===== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+            }
+
+            .back-btn {
+                padding: 6px 15px;
+                font-size: 0.9rem;
+            }
+
+            .settings-panel {
+                padding: 20px;
+            }
+
+            .settings-title {
+                font-size: 1.1rem;
+            }
+
+            .mode-btn, .difficulty-btn {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            .start-btn {
+                padding: 12px;
+                font-size: 1rem;
+            }
+
+            .status-box {
+                padding: 12px;
+                font-size: 1rem;
+            }
+
+            .board {
+                max-width: 280px;
+                gap: 8px;
+            }
+
+            .cell {
+                font-size: 2.5rem;
+                border-radius: 12px;
+            }
+
+            .reset-btn {
+                padding: 10px 25px;
+                font-size: 0.9rem;
+            }
+
+            .winner-message {
+                font-size: 1.2rem;
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+                border-radius: 20px;
+            }
+
+            .header {
+                margin-bottom: 20px;
+            }
+
+            h2 {
+                font-size: 1.1rem;
+            }
+
+            .back-btn {
+                padding: 5px 12px;
+                font-size: 0.8rem;
+            }
+
+            .settings-panel {
+                padding: 15px;
+            }
+
+            .mode-buttons, .difficulty-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .mode-btn, .difficulty-btn {
+                width: 100%;
+                padding: 12px;
+            }
+
+            .board {
+                max-width: 250px;
+                gap: 5px;
+            }
+
+            .cell {
+                font-size: 2rem;
+                border-radius: 10px;
+            }
+
+            .status-box {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            .winner-message {
+                font-size: 1rem;
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .board {
+                max-width: 220px;
+            }
+
+            .cell {
+                font-size: 1.8rem;
+            }
+
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">🔙 بازگشت</button>
+            <h2>⭕ دوز حرفه‌ای ❌</h2>
+        </div>
+
+        <!-- بخش تنظیمات -->
+        <div class="settings-panel" id="settingsPanel">
+            <h3 class="settings-title">⚙️ تنظیمات بازی</h3>
+
+            <div class="setting-group">
+                <div class="setting-label">حالت بازی:</div>
+                <div class="mode-buttons">
+                    <button class="mode-btn" onclick="setGameMode('twoPlayer')" id="modeTwoPlayer">👥 دو نفره</button>
+                    <button class="mode-btn" onclick="setGameMode('vsBot')" id="modeVsBot">🤖 با ربات</button>
+                </div>
+            </div>
+
+            <div class="setting-group" id="difficultyGroup">
+                <div class="setting-label">سطح سختی ربات:</div>
+                <div class="difficulty-buttons">
+                    <button class="difficulty-btn easy" onclick="setDifficulty('easy')" id="diffEasy">🌟 آسان</button>
+                    <button class="difficulty-btn medium" onclick="setDifficulty('medium')" id="diffMedium">⭐⭐ متوسط</button>
+                    <button class="difficulty-btn hard" onclick="setDifficulty('hard')" id="diffHard">⭐⭐⭐ سخت</button>
+                </div>
+            </div>
+
+            <button class="start-btn" onclick="startGame()">🎮 شروع بازی</button>
+        </div>
+
+        <!-- بخش بازی -->
+        <div class="game-area" id="gameArea">
+            <div class="status-box" id="status">نوبت: بازیکن X</div>
+            <div class="board" id="board"></div>
+            <div class="winner-message" id="winnerMessage" style="display: none;"></div>
+            <button class="reset-btn" onclick="resetGame()">🔄 بازی جدید</button>
+        </div>
+    </div>
+
+    <script>
+        // متغیرها
+        let gameMode = 'twoPlayer';
+        let difficulty = 'medium';
+        let board = ['', '', '', '', '', '', '', '', ''];
+        let currentPlayer = 'X';
+        let gameActive = false;
+
+        const winPatterns = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+
+        // تنظیمات
+        function setGameMode(mode) {
+            gameMode = mode;
+            document.getElementById('modeTwoPlayer').classList.remove('active');
+            document.getElementById('modeVsBot').classList.remove('active');
+            document.getElementById(`mode${mode === 'twoPlayer' ? 'TwoPlayer' : 'VsBot'}`).classList.add('active');
+
+            const diffGroup = document.getElementById('difficultyGroup');
+            if (mode === 'twoPlayer') {
+                diffGroup.style.opacity = '0.5';
+                diffGroup.style.pointerEvents = 'none';
+            } else {
+                diffGroup.style.opacity = '1';
+                diffGroup.style.pointerEvents = 'auto';
+            }
+        }
+
+        function setDifficulty(level) {
+            difficulty = level;
+            document.getElementById('diffEasy').classList.remove('active');
+            document.getElementById('diffMedium').classList.remove('active');
+            document.getElementById('diffHard').classList.remove('active');
+            document.getElementById(`diff${level.charAt(0).toUpperCase() + level.slice(1)}`).classList.add('active');
+        }
+
+        function startGame() {
+            document.getElementById('settingsPanel').style.display = 'none';
+            document.getElementById('gameArea').classList.add('active');
+            resetGame();
+        }
+
+        function createBoard() {
+            const boardElement = document.getElementById('board');
+            boardElement.innerHTML = '';
+
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('button');
+                cell.className = `cell ${board[i].toLowerCase()}`;
+                if (!gameActive || board[i] !== '') {
+                    cell.classList.add('disabled');
+                }
+                cell.setAttribute('data-index', i);
+                cell.textContent = board[i];
+                cell.onclick = () => handleCellClick(i);
+                boardElement.appendChild(cell);
+            }
+        }
+
+        function handleCellClick(index) {
+            if (!gameActive || board[index] !== '') return;
+
+            board[index] = currentPlayer;
+            createBoard();
+            checkGameStatus();
+
+            if (gameActive && gameMode === 'vsBot' && currentPlayer === 'O') {
+                setTimeout(botMove, 500);
+            }
+        }
+
+        function checkGameStatus() {
+            let winner = null;
+
+            for (let pattern of winPatterns) {
+                const [a, b, c] = pattern;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    winner = board[a];
+                    break;
+                }
+            }
+
+            if (winner) {
+                gameActive = false;
+                document.getElementById('winnerMessage').style.display = 'block';
+                document.getElementById('winnerMessage').textContent = `🎉 بازیکن ${winner} برنده شد! 🎉`;
+                document.getElementById('status').textContent = `بازی تمام شد - برنده: ${winner}`;
+                return;
+            }
+
+            if (!board.includes('')) {
+                gameActive = false;
+                document.getElementById('winnerMessage').style.display = 'block';
+                document.getElementById('winnerMessage').textContent = '🤝 بازی مساوی شد! 🤝';
+                document.getElementById('status').textContent = 'بازی مساوی شد';
+                return;
+            }
+
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            document.getElementById('status').textContent = `نوبت: بازیکن ${currentPlayer}`;
+        }
+
+        function botMove() {
+            if (!gameActive || currentPlayer !== 'O') return;
+
+            let moveIndex;
+            const emptyCells = board.reduce((acc, cell, index) => {
+                if (cell === '') acc.push(index);
+                return acc;
+            }, []);
+
+            if (emptyCells.length === 0) return;
+
+            if (difficulty === 'easy') {
+                moveIndex = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+            } else {
+                for (let pattern of winPatterns) {
+                    const [a, b, c] = pattern;
+                    if (board[a] === 'O' && board[b] === 'O' && board[c] === '') moveIndex = c;
+                    if (board[a] === 'O' && board[c] === 'O' && board[b] === '') moveIndex = b;
+                    if (board[b] === 'O' && board[c] === 'O' && board[a] === '') moveIndex = a;
+                }
+
+                if (moveIndex === undefined && difficulty === 'hard') {
+                    for (let pattern of winPatterns) {
+                        const [a, b, c] = pattern;
+                        if (board[a] === 'X' && board[b] === 'X' && board[c] === '') moveIndex = c;
+                        if (board[a] === 'X' && board[c] === 'X' && board[b] === '') moveIndex = b;
+                        if (board[b] === 'X' && board[c] === 'X' && board[a] === '') moveIndex = a;
+                    }
+                }
+
+                if (moveIndex === undefined) {
+                    if (board[4] === '') moveIndex = 4;
+                    else {
+                        const corners = [0, 2, 6, 8].filter(i => board[i] === '');
+                        if (corners.length > 0) moveIndex = corners[Math.floor(Math.random() * corners.length)];
+                        else moveIndex = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                    }
+                }
+            }
+
+            if (moveIndex !== undefined) {
+                setTimeout(() => handleCellClick(moveIndex), 100);
+            }
+        }
+
+        function resetGame() {
+            board = ['', '', '', '', '', '', '', '', ''];
+            currentPlayer = 'X';
+            gameActive = true;
+            document.getElementById('winnerMessage').style.display = 'none';
+            document.getElementById('status').textContent = 'نوبت: بازیکن X';
+            createBoard();
+        }
+
+        function goBack() {
+            window.location.href = '../index.html';
+        }
+
+        // مقداردهی اولیه
+        setGameMode('twoPlayer');
+        setDifficulty('medium');
+    </script>
+</body>
+</html>
