@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>تست ریاضی | BrainGames</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazir', 'Tahoma', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .back-btn {
+            background: #764ba2;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .back-btn:hover {
+            background: #5a3780;
+            transform: translateY(-2px);
+        }
+
+        .back-btn:active {
+            transform: translateY(0);
+        }
+
+        h2 {
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .settings-panel {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .settings-title {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .setting-group {
+            margin-bottom: 20px;
+        }
+
+        .setting-label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .difficulty-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .difficulty-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .difficulty-btn:active {
+            transform: translateY(0);
+        }
+
+        .difficulty-btn.easy.active {
+            background: #27ae60;
+            color: white;
+            border-color: #27ae60;
+        }
+
+        .difficulty-btn.medium.active {
+            background: #f39c12;
+            color: white;
+            border-color: #f39c12;
+        }
+
+        .difficulty-btn.hard.active {
+            background: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+
+        .start-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .start-btn:active {
+            transform: translateY(0);
+        }
+
+        .game-area {
+            display: none;
+        }
+
+        .game-area.active {
+            display: block;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .score, .level, .timer {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .score span, .level span, .timer span {
+            background: white;
+            color: #764ba2;
+            padding: 5px 12px;
+            border-radius: 50px;
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+
+        .question-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 3px solid #764ba2;
+        }
+
+        .question {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            direction: ltr;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .option-btn {
+            padding: 20px;
+            background: white;
+            border: 2px solid #764ba2;
+            border-radius: 15px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #333;
+            direction: ltr;
+        }
+
+        .option-btn:hover {
+            background: #764ba2;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .option-btn:active {
+            transform: translateY(0);
+        }
+
+        .option-btn.correct {
+            background: #27ae60;
+            color: white;
+            border-color: #27ae60;
+            animation: correctPop 0.5s;
+        }
+
+        .option-btn.wrong {
+            background: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+            animation: shake 0.5s;
+        }
+
+        .option-btn.disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        @keyframes correctPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .next-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .next-btn:active {
+            transform: translateY(0);
+        }
+
+        .next-btn.hidden {
+            display: none;
+        }
+
+        .feedback {
+            text-align: center;
+            font-size: 1.3rem;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .feedback.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .feedback.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .game-over {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 20px;
+            margin: 30px 0;
+            border: 3px solid #764ba2;
+        }
+
+        .game-over h3 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .game-over p {
+            font-size: 1.5rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .game-over .final-score {
+            font-size: 2.5rem;
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .reset-btn {
+            background: #764ba2;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .reset-btn:hover {
+            background: #5a3780;
+            transform: translateY(-2px);
+        }
+
+        .reset-btn:active {
+            transform: translateY(0);
+        }
+
+        .timer-bar {
+            background: #f0f0f0;
+            border-radius: 10px;
+            height: 10px;
+            margin: 10px 0 20px 0;
+            overflow: hidden;
+        }
+
+        .timer-progress {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 100%;
+            transition: width 1s linear;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+            }
+
+            .back-btn {
+                padding: 6px 15px;
+                font-size: 0.9rem;
+            }
+
+            .settings-panel {
+                padding: 20px;
+            }
+
+            .settings-title {
+                font-size: 1.1rem;
+            }
+
+            .difficulty-btn {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            .start-btn {
+                padding: 12px;
+                font-size: 1rem;
+            }
+
+            .stats-bar {
+                padding: 12px 15px;
+            }
+
+            .score, .level, .timer {
+                font-size: 1rem;
+            }
+
+            .score span, .level span, .timer span {
+                padding: 4px 10px;
+                font-size: 1rem;
+            }
+
+            .question {
+                font-size: 2.5rem;
+            }
+
+            .options {
+                gap: 10px;
+            }
+
+            .option-btn {
+                padding: 15px;
+                font-size: 1.5rem;
+            }
+
+            .feedback {
+                font-size: 1.1rem;
+            }
+
+            .game-over h3 {
+                font-size: 1.5rem;
+            }
+
+            .game-over p {
+                font-size: 1.2rem;
+            }
+
+            .game-over .final-score {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+
+            h2 {
+                font-size: 1.1rem;
+            }
+
+            .difficulty-buttons {
+                flex-direction: column;
+            }
+
+            .difficulty-btn {
+                width: 100%;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .question {
+                font-size: 2rem;
+            }
+
+            .options {
+                grid-template-columns: 1fr;
+            }
+
+            .option-btn {
+                padding: 12px;
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">🔙 بازگشت</button>
+            <h2>🔢 تست ریاضی و هوش</h2>
+        </div>
+
+        <!-- تنظیمات -->
+        <div class="settings-panel" id="settingsPanel">
+            <h3 class="settings-title">⚙️ تنظیمات بازی</h3>
+
+            <div class="setting-group">
+                <div class="setting-label">سطح سختی:</div>
+                <div class="difficulty-buttons">
+                    <button class="difficulty-btn easy" onclick="setDifficulty('easy')" id="diffEasy">🌟 آسان (جمع و تفریق)</button>
+                    <button class="difficulty-btn medium" onclick="setDifficulty('medium')" id="diffMedium">⭐⭐ متوسط (ضرب و تقسیم)</button>
+                    <button class="difficulty-btn hard" onclick="setDifficulty('hard')" id="diffHard">⭐⭐⭐ سخت (مخلوط و هوش)</button>
+                </div>
+            </div>
+
+            <button class="start-btn" onclick="startGame()">🎮 شروع بازی</button>
+        </div>
+
+        <!-- بخش بازی -->
+        <div class="game-area" id="gameArea">
+            <div class="timer-bar">
+                <div class="timer-progress" id="timerProgress"></div>
+            </div>
+            
+            <div class="stats-bar">
+                <div class="score">امتیاز: <span id="score">0</span></div>
+                <div class="level">سوال: <span id="currentQuestion">1</span>/<span id="totalQuestions">10</span></div>
+                <div class="timer">⏱️ <span id="timer">10</span> ثانیه</div>
+            </div>
+
+            <div class="question-box">
+                <div class="question" id="question">۲ + ۲ = ?</div>
+                <div class="options" id="options">
+                    <!-- گزینه‌ها با JS ساخته می‌شن -->
+                </div>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+            
+            <button class="next-btn hidden" id="nextBtn" onclick="nextQuestion()">⏭️ سوال بعدی</button>
+
+            <div class="game-over" id="gameOver" style="display: none;">
+                <h3>🏁 پایان بازی</h3>
+                <p>امتیاز نهایی شما:</p>
+                <div class="final-score" id="finalScore">۰</div>
+                <p>از ۱۰ سوال</p>
+            </div>
+
+            <button class="reset-btn" onclick="resetGame()">🔄 بازی جدید</button>
+        </div>
+    </div>
+
+    <script>
+        // متغیرها
+        let difficulty = 'medium';
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let questions = [];
+        let timerInterval;
+        let timeLeft = 10;
+        let canAnswer = true;
+        let totalQuestions = 10;
+
+        // تنظیم سطح سختی
+        function setDifficulty(level) {
+            difficulty = level;
+            document.getElementById('diffEasy').classList.remove('active');
+            document.getElementById('diffMedium').classList.remove('active');
+            document.getElementById('diffHard').classList.remove('active');
+            document.getElementById(`diff${level.charAt(0).toUpperCase() + level.slice(1)}`).classList.add('active');
+        }
+
+        // شروع بازی
+        function startGame() {
+            document.getElementById('settingsPanel').style.display = 'none';
+            document.getElementById('gameArea').classList.add('active');
+            resetGame();
+        }
+
+        // ساختن سوالات
+        function generateQuestions() {
+            questions = [];
+            for (let i = 0; i < totalQuestions; i++) {
+                let question = {};
+                
+                switch(difficulty) {
+                    case 'easy':
+                        question = generateEasyQuestion();
+                        break;
+                    case 'medium':
+                        question = generateMediumQuestion();
+                        break;
+                    case 'hard':
+                        question = generateHardQuestion();
+                        break;
+                }
+                
+                questions.push(question);
+            }
+        }
+
+        // سوال آسان (جمع و تفریق)
+        function generateEasyQuestion() {
+            const operations = ['+', '-'];
+            const op = operations[Math.floor(Math.random() * operations.length)];
+            let num1, num2, answer;
+            
+            if (op === '+') {
+                num1 = Math.floor(Math.random() * 20) + 1;
+                num2 = Math.floor(Math.random() * 20) + 1;
+                answer = num1 + num2;
+            } else {
+                num1 = Math.floor(Math.random() * 20) + 10;
+                num2 = Math.floor(Math.random() * 10) + 1;
+                answer = num1 - num2;
+            }
+            
+            const questionText = `${num1} ${op} ${num2} = ?`;
+            const options = generateOptions(answer, 10, 30);
+            
+            return {
+                text: questionText,
+                answer: answer,
+                options: options
+            };
+        }
+
+        // سوال متوسط (ضرب و تقسیم)
+        function generateMediumQuestion() {
+            const operations = ['×', '÷'];
+            const op = operations[Math.floor(Math.random() * operations.length)];
+            let num1, num2, answer;
+            
+            if (op === '×') {
+                num1 = Math.floor(Math.random() * 12) + 1;
+                num2 = Math.floor(Math.random() * 12) + 1;
+                answer = num1 * num2;
+            } else {
+                num2 = Math.floor(Math.random() * 10) + 1;
+                answer = Math.floor(Math.random() * 10) + 1;
+                num1 = num2 * answer;
+            }
+            
+            const questionText = `${num1} ${op} ${num2} = ?`;
+            const options = generateOptions(answer, 1, 144);
+            
+            return {
+                text: questionText,
+                answer: answer,
+                options: options
+            };
+        }
+
+        // سوال سخت (مخلوط و هوش)
+        function generateHardQuestion() {
+            const types = ['normal', 'twoStep', 'compare'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            
+            if (type === 'normal') {
+                const operations = ['+', '-', '×', '÷'];
+                const op = operations[Math.floor(Math.random() * operations.length)];
+                let num1, num2, answer;
+                
+                switch(op) {
+                    case '+':
+                        num1 = Math.floor(Math.random() * 50) + 20;
+                        num2 = Math.floor(Math.random() * 50) + 20;
+                        answer = num1 + num2;
+                        break;
+                    case '-':
+                        num1 = Math.floor(Math.random() * 50) + 30;
+                        num2 = Math.floor(Math.random() * 20) + 1;
+                        answer = num1 - num2;
+                        break;
+                    case '×':
+                        num1 = Math.floor(Math.random() * 15) + 5;
+                        num2 = Math.floor(Math.random() * 15) + 5;
+                        answer = num1 * num2;
+                        break;
+                    case '÷':
+                        num2 = Math.floor(Math.random() * 10) + 2;
+                        answer = Math.floor(Math.random() * 10) + 2;
+                        num1 = num2 * answer;
+                        break;
+                }
+                
+                const questionText = `${num1} ${op} ${num2} = ?`;
+                const options = generateOptions(answer, 1, 200);
+                return { text: questionText, answer: answer, options: options };
+                
+            } else if (type === 'twoStep') {
+                const num1 = Math.floor(Math.random() * 10) + 1;
+                const num2 = Math.floor(Math.random() * 10) + 1;
+                const num3 = Math.floor(Math.random() * 10) + 1;
+                const answer = num1 + num2 * num3;
+                const questionText = `${num1} + ${num2} × ${num3} = ?`;
+                const options = generateOptions(answer, 1, 100);
+                return { text: questionText, answer: answer, options: options };
+                
+            } else {
+                const num1 = Math.floor(Math.random() * 50) + 10;
+                const num2 = Math.floor(Math.random() * 50) + 10;
+                const answer = num1 > num2 ? num1 : num2;
+                const questionText = `بزرگترین عدد: ${num1} و ${num2}`;
+                const options = [num1, num2, num1 + num2, Math.abs(num1 - num2)];
+                shuffleArray(options);
+                return { text: questionText, answer: answer, options: options };
+            }
+        }
+
+        // ساختن گزینه‌ها
+        function generateOptions(correctAnswer, min, max) {
+            let options = [correctAnswer];
+            
+            while (options.length < 4) {
+                let offset = Math.floor(Math.random() * 10) + 1;
+                let wrong = correctAnswer + (Math.random() > 0.5 ? offset : -offset);
+                
+                if (wrong >= min && wrong <= max && !options.includes(wrong)) {
+                    options.push(wrong);
+                }
+            }
+            
+            shuffleArray(options);
+            return options;
+        }
+
+        // شافل کردن آرایه
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // نمایش سوال
+        function showQuestion() {
+            if (currentQuestionIndex >= questions.length) {
+                endGame();
+                return;
+            }
+            
+            const question = questions[currentQuestionIndex];
+            document.getElementById('question').textContent = question.text;
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => checkAnswer(option);
+                optionsDiv.appendChild(btn);
+            });
+            
+            // ریست تایمر
+            timeLeft = 10;
+            canAnswer = true;
+            document.getElementById('timer').textContent = timeLeft;
+            document.getElementById('nextBtn').classList.add('hidden');
+            document.getElementById('feedback').style.display = 'none';
+            
+            // شروع تایمر
+            startTimer();
+        }
+
+        // تایمر
+        function startTimer() {
+            const timerProgress = document.getElementById('timerProgress');
+            timerProgress.style.width = '100%';
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = timeLeft;
+                timerProgress.style.width = (timeLeft / 10) * 100 + '%';
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    if (canAnswer) {
+                        canAnswer = false;
+                        showFeedback('⏰ زمان تمام شد!', 'error');
+                        disableOptions();
+                        document.getElementById('nextBtn').classList.remove('hidden');
+                    }
+                }
+            }, 1000);
+        }
+
+        // بررسی جواب
+        function checkAnswer(selected) {
+            if (!canAnswer) return;
+            
+            clearInterval(timerInterval);
+            canAnswer = false;
+            
+            const question = questions[currentQuestionIndex];
+            const options = document.querySelectorAll('.option-btn');
+            
+            // هایلایت کردن گزینه‌ها
+            options.forEach(btn => {
+                btn.classList.add('disabled');
+                if (parseInt(btn.textContent) === question.answer) {
+                    btn.classList.add('correct');
+                }
+                if (parseInt(btn.textContent) === selected && selected !== question.answer) {
+                    btn.classList.add('wrong');
+                }
+            });
+            
+            if (selected === question.answer) {
+                score += 10;
+                document.getElementById('score').textContent = score;
+                showFeedback('✓ آفرین! جواب درست است', 'success');
+            } else {
+                showFeedback(`✗ اشتباه! جواب صحیح: ${question.answer}`, 'error');
+            }
+            
+            document.getElementById('nextBtn').classList.remove('hidden');
+        }
+
+        // غیرفعال کردن گزینه‌ها
+        function disableOptions() {
+            const options = document.querySelectorAll('.option-btn');
+            options.forEach(btn => {
+                btn.classList.add('disabled');
+            });
+        }
+
+        // نمایش پیام
+        function showFeedback(message, type) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.className = `feedback ${type}`;
+        }
+
+        // سوال بعدی
+        function nextQuestion() {
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        // پایان بازی
+        function endGame() {
+            document.getElementById('question').style.display = 'none';
+            document.getElementById('options').style.display = 'none';
+            document.getElementById('nextBtn').classList.add('hidden');
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('timer-bar').style.display = 'none';
+            document.getElementById('gameOver').style.display = 'block';
+            document.getElementById('finalScore').textContent = score;
+        }
+
+        // ریست بازی
+        function resetGame() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            currentQuestionIndex = 0;
+            score = 0;
+            document.getElementById('score').textContent = '0';
+            document.getElementById('question').style.display = 'block';
+            document.getElementById('options').style.display = 'grid';
+            document.getElementById('gameOver').style.display = 'none';
+            
+            generateQuestions();
+            showQuestion();
+        }
+
+        // بازگشت
+        function goBack() {
+            window.location.href = '../index.html';
+        }
+
+        // مقداردهی اولیه
+        setDifficulty('medium');
+    </script>
+</body>
+</html>
