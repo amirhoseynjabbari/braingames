@@ -22,12 +22,15 @@
         }
 
         .container {
-            background: white;
-            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 50px;
             padding: 40px;
-            max-width: 1100px;
+            max-width: 1300px;
             width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .header {
@@ -36,39 +39,70 @@
         }
 
         .header h1 {
-            font-size: 3rem;
-            color: #764ba2;
+            font-size: 4rem;
+            color: white;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            text-shadow: 3px 3px 0 rgba(118, 75, 162, 0.5), 5px 5px 20px rgba(0,0,0,0.4);
+            letter-spacing: 2px;
         }
 
         .header p {
-            color: #666;
-            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+            font-size: 1.3rem;
             line-height: 1.6;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
 
         .games-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 25px;
             margin: 30px 0;
         }
 
         .game-card {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 20px;
+            background: white;
+            border-radius: 30px;
             padding: 25px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* افکت نئون در هاور */
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: var(--y);
+            left: var(--x);
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%);
+            transition: width 0.6s, height 0.6s;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .game-card:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        .game-card > * {
+            position: relative;
+            z-index: 1;
         }
 
         .game-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(-15px) scale(1.02);
             border-color: #764ba2;
+            box-shadow: 0 30px 40px rgba(0, 0, 0, 0.3), 0 0 20px #764ba2;
         }
 
         .game-card:active {
@@ -76,90 +110,240 @@
         }
 
         .game-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 15px;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 3rem;
+            font-size: 4rem;
+            background: linear-gradient(135deg, #667eea20, #764ba220);
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .game-card:hover .game-icon {
+            transform: rotate(5deg) scale(1.1);
+            background: linear-gradient(135deg, #667eea40, #764ba240);
         }
 
         .game-icon img {
             width: 100%;
             height: 100%;
             object-fit: contain;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2));
         }
 
         .game-card h3 {
             color: #333;
             margin-bottom: 10px;
-            font-size: 1.4rem;
+            font-size: 1.6rem;
+            font-weight: bold;
         }
 
         .game-card p {
             color: #666;
-            font-size: 0.95rem;
+            font-size: 1rem;
             line-height: 1.6;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .difficulty-tags {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             justify-content: center;
             flex-wrap: wrap;
         }
 
         .tag {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            padding: 6px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
             font-weight: bold;
             color: white;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .game-card:hover .tag {
+            transform: scale(1.05);
         }
 
         .tag.easy {
-            background: #27ae60;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
         }
 
         .tag.medium {
-            background: #f39c12;
+            background: linear-gradient(135deg, #f39c12, #f1c40f);
         }
 
         .tag.hard {
-            background: #e74c3c;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
         }
 
+        /* بج‌های مخصوص هر بازی */
+        .game-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #764ba2;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+
+        .game-badge.popular {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .game-badge.new {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+
+        /* ===== بخش آمار بازی‌ها (بدون بازیکنان آنلاین) ===== */
+        .stats-section {
+            margin: 40px 0 30px;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(5px);
+            padding: 15px 30px;
+            border-radius: 60px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            min-width: 160px;
+            justify-content: center;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.25);
+            border-color: rgba(255,255,255,0.4);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+        }
+
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .stat-number {
+            font-size: 1.6rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        /* ===== فوتر با لینک‌های اجتماعی (رفع مشکل موبایل) ===== */
         .footer {
-            text-align: center;
             margin-top: 40px;
-            padding-top: 20px;
-            border-top: 2px solid #f0f0f0;
+            padding-top: 30px;
+            border-top: 2px solid rgba(255,255,255,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
-        .footer p {
-            color: #666;
-            font-size: 0.9rem;
+        .social-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
-        /* ===== ریسپانسیو برای موبایل ===== */
+        .social-link {
+            width: 45px;
+            height: 45px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(5px);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.2);
+            flex-shrink: 0; /* جلوگیری از کوچک شدن */
+        }
+
+        .social-link:hover {
+            transform: translateY(-5px) scale(1.1);
+            background: #764ba2;
+            border-color: white;
+        }
+
+        .copyright {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.95rem;
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /* ===== ریسپانسیو برای موبایل (بهبود یافته) ===== */
         @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-
             .container {
                 padding: 20px;
-                border-radius: 20px;
+                border-radius: 30px;
             }
 
             .header h1 {
-                font-size: 2rem;
+                font-size: 2.5rem;
             }
 
             .header p {
                 font-size: 1rem;
+                padding: 0 10px;
+            }
+
+            .stats-section {
+                gap: 15px;
+                margin: 30px 0 20px;
+            }
+
+            .stat-item {
+                padding: 12px 20px;
+                min-width: 140px;
+                gap: 10px;
+            }
+
+            .stat-icon {
+                font-size: 1.6rem;
+            }
+
+            .stat-number {
+                font-size: 1.3rem;
+            }
+
+            .stat-label {
+                font-size: 0.75rem;
             }
 
             .games-grid {
@@ -168,34 +352,70 @@
             }
 
             .game-card {
-                padding: 15px;
                 display: flex;
                 align-items: center;
                 text-align: right;
                 gap: 15px;
+                padding: 15px;
             }
 
             .game-icon {
-                width: 60px;
-                height: 60px;
-                margin-bottom: 0;
+                width: 70px;
+                height: 70px;
+                min-width: 70px;
                 font-size: 2.5rem;
-                min-width: 60px;
+                margin: 0;
+                border-radius: 20px;
             }
 
             .game-card h3 {
-                font-size: 1.1rem;
+                font-size: 1.2rem;
                 margin-bottom: 5px;
             }
 
             .game-card p {
                 font-size: 0.85rem;
-                margin-bottom: 0;
+                margin-bottom: 10px;
+                line-height: 1.4;
             }
 
             .difficulty-tags {
                 justify-content: flex-start;
-                margin-top: 8px;
+                gap: 5px;
+            }
+
+            .tag {
+                padding: 4px 10px;
+                font-size: 0.75rem;
+            }
+
+            .game-badge {
+                font-size: 0.7rem;
+                padding: 3px 8px;
+                top: 10px;
+                right: 10px;
+            }
+
+            .footer {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .social-links {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .social-link {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+
+            .copyright {
+                width: 100%;
+                font-size: 0.85rem;
             }
         }
 
@@ -205,7 +425,19 @@
             }
 
             .header h1 {
-                font-size: 1.8rem;
+                font-size: 2rem;
+            }
+
+            .stats-section {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .stat-item {
+                width: 100%;
+                max-width: 250px;
+                justify-content: flex-start;
             }
 
             .game-card {
@@ -213,10 +445,10 @@
             }
 
             .game-icon {
-                width: 50px;
-                height: 50px;
+                width: 60px;
+                height: 60px;
+                min-width: 60px;
                 font-size: 2rem;
-                min-width: 50px;
             }
 
             .game-card h3 {
@@ -224,12 +456,21 @@
             }
 
             .game-card p {
-                font-size: 0.8rem;
+                font-size: 0.75rem;
             }
 
-            .tag {
-                padding: 3px 8px;
-                font-size: 0.7rem;
+            .social-links {
+                gap: 8px;
+            }
+
+            .social-link {
+                width: 38px;
+                height: 38px;
+                font-size: 1.1rem;
+            }
+
+            .copyright {
+                font-size: 0.75rem;
             }
         }
 
@@ -239,8 +480,27 @@
                 text-align: center;
             }
 
+            .game-icon {
+                margin-bottom: 10px;
+            }
+
             .difficulty-tags {
                 justify-content: center;
+            }
+
+            .game-badge {
+                top: 5px;
+                right: 5px;
+            }
+
+            .social-links {
+                gap: 5px;
+            }
+
+            .social-link {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
             }
         }
     </style>
@@ -252,9 +512,28 @@
             <p>مجموعه بازی‌های فکری و سرگرم‌کننده | ۶ بازی هیجان‌انگیز</p>
         </div>
 
+        <!-- بخش آمار بازی‌ها (بدون بازیکنان آنلاین) -->
+        <div class="stats-section">
+            <div class="stat-item">
+                <div class="stat-icon">🎮</div>
+                <div class="stat-info">
+                    <span class="stat-label">تعداد بازی‌ها</span>
+                    <span class="stat-number">۶</span>
+                </div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-info">
+                    <span class="stat-label">بازی پربازدید</span>
+                    <span class="stat-number">۲۰۴۸</span>
+                </div>
+            </div>
+        </div>
+
         <div class="games-grid">
             <!-- بازی ۱: دوز حرفه‌ای -->
             <div class="game-card" onclick="location.href='games/tictactoe.html'">
+                <div class="game-badge popular">🔥 محبوب</div>
                 <div class="game-icon">⭕❌</div>
                 <div style="flex: 1;">
                     <h3>دوز حرفه‌ای</h3>
@@ -269,6 +548,7 @@
 
             <!-- بازی ۲: تست حافظه -->
             <div class="game-card" onclick="location.href='games/memory.html'">
+                <div class="game-badge new">🆕 جدید</div>
                 <div class="game-icon">🃏</div>
                 <div style="flex: 1;">
                     <h3>تست حافظه</h3>
@@ -311,6 +591,7 @@
 
             <!-- بازی ۵: Flappy Bird -->
             <div class="game-card" onclick="location.href='games/flappy.html'">
+                <div class="game-badge popular">🔥 محبوب</div>
                 <div class="game-icon">
                     <img src="games/flappy.png" alt="Flappy Bird" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
@@ -327,6 +608,7 @@
 
             <!-- بازی ۶: ۲۰۴۸ -->
             <div class="game-card" onclick="location.href='games/2048.html'">
+                <div class="game-badge popular">🔥 محبوب</div>
                 <div class="game-icon">🎮</div>
                 <div style="flex: 1;">
                     <h3>۲۰۴۸</h3>
@@ -340,20 +622,41 @@
             </div>
         </div>
 
+        <!-- فوتر با شبکه‌های اجتماعی -->
         <div class="footer">
-            <p>برای شروع، روی هر بازی کلیک کن | ۶ بازی کامل و حرفه‌ای</p>
+            <div class="social-links">
+                <a href="#" class="social-link">📷</a>
+                <a href="#" class="social-link">🐦</a>
+                <a href="#" class="social-link">💬</a>
+                <a href="#" class="social-link">📱</a>
+                <a href="#" class="social-link">▶</a>
+            </div>
+            <div class="copyright">
+                <p>© ۲۰۲۵ BrainGames | طراحی شده با 🧠 برای تقویت ذهن</p>
+            </div>
         </div>
     </div>
 
     <script>
         // نمایش تعداد بازی‌ها در کنسول
-        console.log('🎮 BrainGames با ۶ بازی آماده است!');
-        console.log('✅ دوز حرفه‌ای');
-        console.log('✅ تست حافظه');
-        console.log('✅ فلشکارت زبان');
-        console.log('✅ تست ریاضی');
-        console.log('✅ Flappy Bird');
-        console.log('✅ ۲۰۴۸');
+        console.log('%c🧠 BrainGames با ۶ بازی آماده است!', 'color: #764ba2; font-size: 16px; font-weight: bold;');
+        console.log('%c✅ دوز حرفه‌ای', 'color: #27ae60');
+        console.log('%c✅ تست حافظه', 'color: #27ae60');
+        console.log('%c✅ فلشکارت زبان', 'color: #27ae60');
+        console.log('%c✅ تست ریاضی', 'color: #27ae60');
+        console.log('%c✅ Flappy Bird', 'color: #27ae60');
+        console.log('%c✅ ۲۰۴۸', 'color: #27ae60');
+
+        // افکت موس روی کارت‌ها
+        document.querySelectorAll('.game-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--x', `${x}px`);
+                card.style.setProperty('--y', `${y}px`);
+            });
+        });
     </script>
 </body>
 </html>
