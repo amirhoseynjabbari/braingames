@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>🧠 BrainGames | بازی‌های فکری</title>
+    <title>🧠 BrainGames | بازی‌های فکری و سرگرم‌کننده</title>
     <style>
         * {
             margin: 0;
@@ -25,7 +25,7 @@
             background: white;
             border-radius: 30px;
             padding: 40px;
-            max-width: 1000px;
+            max-width: 1100px;
             width: 100%;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
@@ -50,8 +50,8 @@
 
         .games-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
             margin: 30px 0;
         }
 
@@ -94,12 +94,12 @@
         .game-card h3 {
             color: #333;
             margin-bottom: 10px;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
         }
 
         .game-card p {
             color: #666;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             line-height: 1.6;
             margin-bottom: 15px;
         }
@@ -249,11 +249,11 @@
     <div class="container">
         <div class="header">
             <h1>🧠 BrainGames</h1>
-            <p>مجموعه بازی‌های فکری و سرگرم‌کننده</p>
+            <p>مجموعه بازی‌های فکری و سرگرم‌کننده | ۶ بازی هیجان‌انگیز</p>
         </div>
 
         <div class="games-grid">
-            <!-- بازی دوز -->
+            <!-- بازی ۱: دوز حرفه‌ای -->
             <div class="game-card" onclick="location.href='games/tictactoe.html'">
                 <div class="game-icon">⭕❌</div>
                 <div style="flex: 1;">
@@ -267,12 +267,12 @@
                 </div>
             </div>
 
-            <!-- تست حافظه -->
+            <!-- بازی ۲: تست حافظه -->
             <div class="game-card" onclick="location.href='games/memory.html'">
                 <div class="game-icon">🃏</div>
                 <div style="flex: 1;">
                     <h3>تست حافظه</h3>
-                    <p>کارت‌های مشابه رو پیدا کن</p>
+                    <p>کارت‌های مشابه رو پیدا کن و حافظه‌ات رو تقویت کن</p>
                     <div class="difficulty-tags">
                         <span class="tag easy">۴×۳</span>
                         <span class="tag medium">۴×۴</span>
@@ -281,12 +281,12 @@
                 </div>
             </div>
 
-            <!-- فلشکارت زبان -->
+            <!-- بازی ۳: فلشکارت زبان -->
             <div class="game-card" onclick="location.href='games/flashcards.html'">
                 <div class="game-icon">🔤</div>
                 <div style="flex: 1;">
                     <h3>فلشکارت زبان</h3>
-                    <p>ترجمه کلمات انگلیسی</p>
+                    <p>ترجمه کلمات انگلیسی - سه سطح مختلف</p>
                     <div class="difficulty-tags">
                         <span class="tag easy">مقدماتی</span>
                         <span class="tag medium">متوسط</span>
@@ -295,12 +295,12 @@
                 </div>
             </div>
 
-            <!-- تست ریاضی -->
+            <!-- بازی ۴: تست ریاضی -->
             <div class="game-card" onclick="location.href='games/math.html'">
                 <div class="game-icon">🔢</div>
                 <div style="flex: 1;">
                     <h3>تست ریاضی و هوش</h3>
-                    <p>معادلات و سوالات هوش</p>
+                    <p>معادلات و سوالات هوش با تایمر</p>
                     <div class="difficulty-tags">
                         <span class="tag easy">آسان</span>
                         <span class="tag medium">متوسط</span>
@@ -309,7 +309,7 @@
                 </div>
             </div>
 
-            <!-- Flappy Bird (بازی جدید) -->
+            <!-- بازی ۵: Flappy Bird -->
             <div class="game-card" onclick="location.href='games/flappy.html'">
                 <div class="game-icon">
                     <img src="games/flappy.png" alt="Flappy Bird" style="width: 100%; height: 100%; object-fit: contain;">
@@ -324,16 +324,36 @@
                     </div>
                 </div>
             </div>
+
+            <!-- بازی ۶: ۲۰۴۸ -->
+            <div class="game-card" onclick="location.href='games/2048.html'">
+                <div class="game-icon">🎮</div>
+                <div style="flex: 1;">
+                    <h3>۲۰۴۸</h3>
+                    <p>بازی اعداد معروف - به ۲۰۴۸ برس و برنده شو!</p>
+                    <div class="difficulty-tags">
+                        <span class="tag easy">آسان</span>
+                        <span class="tag medium">متوسط</span>
+                        <span class="tag hard">سخت</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="footer">
-            <p>برای شروع، روی هر بازی کلیک کن</p>
+            <p>برای شروع، روی هر بازی کلیک کن | ۶ بازی کامل و حرفه‌ای</p>
         </div>
     </div>
 
     <script>
-        // اینجا می‌تونی بعداً کدهای جاوااسکریپت رو اضافه کنی
-        console.log('BrainGames Loaded!');
+        // نمایش تعداد بازی‌ها در کنسول
+        console.log('🎮 BrainGames با ۶ بازی آماده است!');
+        console.log('✅ دوز حرفه‌ای');
+        console.log('✅ تست حافظه');
+        console.log('✅ فلشکارت زبان');
+        console.log('✅ تست ریاضی');
+        console.log('✅ Flappy Bird');
+        console.log('✅ ۲۰۴۸');
     </script>
 </body>
 </html>

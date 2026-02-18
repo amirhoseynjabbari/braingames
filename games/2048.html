@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🎮 2048 | BrainGames</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazir', 'Tahoma', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: #faf8ef;
+            border-radius: 30px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .back-btn {
+            background: #bbada0;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #9c8a7c;
+            transform: translateY(-2px);
+        }
+
+        h1 {
+            color: #776e65;
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .scores {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .score-box {
+            background: #bbada0;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 90px;
+        }
+
+        .score-label {
+            color: #eee4da;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .score-value {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .game-board {
+            position: relative;
+            background: #bbada0;
+            border-radius: 20px;
+            padding: 15px;
+            aspect-ratio: 1/1;
+            margin: 20px 0;
+            touch-action: none;
+            user-select: none;
+            width: 100%;
+        }
+
+        .grid-container {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            pointer-events: none;
+        }
+
+        .grid-cell {
+            background: rgba(238, 228, 218, 0.35);
+            border-radius: 10px;
+            aspect-ratio: 1/1;
+            width: 100%;
+        }
+
+        .tiles-container {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+        }
+
+        .tile {
+            position: absolute;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #776e65;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.15s ease-in-out;
+            will-change: left, top, width, height;
+            background: #cdc1b4;
+        }
+
+        .tile-inner {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            font-size: inherit;
+        }
+
+        /* رنگ‌بندی تایل‌ها */
+        .tile[data-value="2"] { background: #eee4da; color: #776e65; }
+        .tile[data-value="4"] { background: #ede0c8; color: #776e65; }
+        .tile[data-value="8"] { background: #f2b179; color: #f9f6f2; }
+        .tile[data-value="16"] { background: #f59563; color: #f9f6f2; }
+        .tile[data-value="32"] { background: #f67c5f; color: #f9f6f2; }
+        .tile[data-value="64"] { background: #f65e3b; color: #f9f6f2; }
+        .tile[data-value="128"] { background: #edcf72; color: #f9f6f2; font-size: 1.8rem; }
+        .tile[data-value="256"] { background: #edcc61; color: #f9f6f2; font-size: 1.8rem; }
+        .tile[data-value="512"] { background: #edc850; color: #f9f6f2; font-size: 1.8rem; }
+        .tile[data-value="1024"] { background: #edc53f; color: #f9f6f2; font-size: 1.5rem; }
+        .tile[data-value="2048"] { background: #edc22e; color: #f9f6f2; font-size: 1.5rem; }
+        .tile[data-value="4096"] { background: #3d3a6b; color: #f9f6f2; font-size: 1.5rem; }
+        .tile[data-value="8192"] { background: #3d3a6b; color: #f9f6f2; font-size: 1.5rem; }
+
+        /* انیمیشن ظاهر شدن */
+        @keyframes appear {
+            0% { opacity: 0; transform: scale(0); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .tile-appear {
+            animation: appear 0.2s ease-out;
+        }
+
+        /* انیمیشن ترکیب شدن */
+        @keyframes merge {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .tile-merge {
+            animation: merge 0.15s ease-out;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .new-game-btn {
+            background: #8f7a66;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .new-game-btn:hover {
+            background: #7f6a56;
+            transform: translateY(-2px);
+        }
+
+        .instructions {
+            color: #776e65;
+            font-size: 0.95rem;
+            padding: 10px 20px;
+            background: #f0f0f0;
+            border-radius: 50px;
+            text-align: center;
+        }
+
+        .game-over, .game-win {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .game-over.show, .game-win.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .game-over-content, .game-win-content {
+            background: #faf8ef;
+            padding: 40px;
+            border-radius: 30px;
+            text-align: center;
+            max-width: 350px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .game-over-content h2, .game-win-content h2 {
+            color: #776e65;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+        }
+
+        .game-over-content p, .game-win-content p {
+            color: #776e65;
+            font-size: 1.3rem;
+            margin: 20px 0;
+        }
+
+        .game-over-content button, .game-win-content button {
+            background: #8f7a66;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .game-over-content button:hover, .game-win-content button:hover {
+            background: #7f6a56;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ===== بهینه‌سازی برای موبایل ===== */
+        @media (max-width: 480px) {
+            .game-container {
+                padding: 15px;
+            }
+
+            .header {
+                margin-bottom: 15px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .score-box {
+                padding: 6px 12px;
+                min-width: 70px;
+            }
+
+            .score-label {
+                font-size: 0.7rem;
+            }
+
+            .score-value {
+                font-size: 1.1rem;
+            }
+
+            .game-board {
+                padding: 10px;
+            }
+
+            .grid-container {
+                top: 10px;
+                left: 10px;
+                right: 10px;
+                bottom: 10px;
+                gap: 8px;
+            }
+
+            .tiles-container {
+                top: 10px;
+                left: 10px;
+                right: 10px;
+                bottom: 10px;
+            }
+
+            .tile {
+                font-size: 1.3rem;
+            }
+
+            .tile[data-value="128"],
+            .tile[data-value="256"],
+            .tile[data-value="512"] {
+                font-size: 1.1rem;
+            }
+
+            .tile[data-value="1024"],
+            .tile[data-value="2048"],
+            .tile[data-value="4096"],
+            .tile[data-value="8192"] {
+                font-size: 0.9rem;
+            }
+
+            .controls {
+                margin-top: 15px;
+                justify-content: center;
+            }
+
+            .new-game-btn {
+                padding: 8px 20px;
+                font-size: 0.9rem;
+            }
+
+            .instructions {
+                font-size: 0.8rem;
+                padding: 8px 15px;
+            }
+
+            .game-over-content, .game-win-content {
+                padding: 25px;
+            }
+
+            .game-over-content h2, .game-win-content h2 {
+                font-size: 1.8rem;
+            }
+
+            .game-over-content p, .game-win-content p {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">🔙 بازگشت</button>
+            <h1>2048</h1>
+            <div class="scores">
+                <div class="score-box">
+                    <div class="score-label">امتیاز</div>
+                    <div class="score-value" id="score">0</div>
+                </div>
+                <div class="score-box">
+                    <div class="score-label">بهترین</div>
+                    <div class="score-value" id="bestScore">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-board" id="gameBoard">
+            <div class="grid-container" id="gridContainer">
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+                <div class="grid-cell"></div>
+            </div>
+            <div class="tiles-container" id="tilesContainer"></div>
+        </div>
+
+        <div class="controls">
+            <button class="new-game-btn" onclick="newGame()">🔄 بازی جدید</button>
+            <div class="instructions">
+                ← ↑ ↓ → یا بکش
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div class="game-over" id="gameOver">
+        <div class="game-over-content">
+            <h2>😵 Game Over!</h2>
+            <p>هیچ حرکتی باقی نمونده!</p>
+            <p>امتیاز نهایی: <span id="finalScore">0</span></p>
+            <button onclick="newGame()">🔄 بازی جدید</button>
+        </div>
+    </div>
+
+    <!-- Game Win Modal -->
+    <div class="game-win" id="gameWin">
+        <div class="game-win-content">
+            <h2>🎉 آفرین! برنده شدی!</h2>
+            <p>به عدد ۲۰۴۸ رسیدی!</p>
+            <p>امتیاز نهایی: <span id="winScore">0</span></p>
+            <button onclick="newGame()">🔄 بازی جدید</button>
+        </div>
+    </div>
+
+    <script>
+        let board = [];
+        let score = 0;
+        let bestScore = 0; // مقدار پیش‌فرض 0
+        let gameActive = true;
+        let gameWon = false;
+        let tileId = 0;
+        let moving = false;
+        let cellSize = 0;
+        let gap = 15;
+        let boardPadding = 15;
+
+        // دریافت بهترین امتیاز از localStorage
+        try {
+            const savedBest = localStorage.getItem('2048BestScore');
+            if (savedBest !== null) {
+                bestScore = parseInt(savedBest) || 0;
+            }
+        } catch (e) {
+            console.log('خطا در خواندن localStorage');
+        }
+        
+        document.getElementById('bestScore').textContent = bestScore;
+
+        function calculateCellSize() {
+            const board = document.getElementById('gameBoard');
+            const rect = board.getBoundingClientRect();
+            
+            // تشخیص موبایل
+            if (window.innerWidth <= 480) {
+                boardPadding = 10;
+                gap = 8;
+            } else {
+                boardPadding = 15;
+                gap = 15;
+            }
+            
+            const boardSize = rect.width - (2 * boardPadding);
+            cellSize = (boardSize - (3 * gap)) / 4;
+            
+            // آپدیت استایل گرید
+            const gridContainer = document.getElementById('gridContainer');
+            gridContainer.style.top = boardPadding + 'px';
+            gridContainer.style.left = boardPadding + 'px';
+            gridContainer.style.right = boardPadding + 'px';
+            gridContainer.style.bottom = boardPadding + 'px';
+            gridContainer.style.gap = gap + 'px';
+            
+            const tilesContainer = document.getElementById('tilesContainer');
+            tilesContainer.style.top = boardPadding + 'px';
+            tilesContainer.style.left = boardPadding + 'px';
+            tilesContainer.style.right = boardPadding + 'px';
+            tilesContainer.style.bottom = boardPadding + 'px';
+            
+            return cellSize;
+        }
+
+        function getTilePosition(row, col) {
+            if (cellSize === 0) calculateCellSize();
+            
+            return {
+                left: col * (cellSize + gap),
+                top: row * (cellSize + gap),
+                width: cellSize,
+                height: cellSize
+            };
+        }
+
+        function createTile(value, row, col, isNew = false, isMerged = false) {
+            const container = document.getElementById('tilesContainer');
+            const tile = document.createElement('div');
+            tile.className = 'tile';
+            tile.setAttribute('data-value', value);
+            tile.setAttribute('data-id', tileId++);
+            
+            const inner = document.createElement('div');
+            inner.className = 'tile-inner';
+            inner.textContent = value;
+            tile.appendChild(inner);
+            
+            const pos = getTilePosition(row, col);
+            tile.style.left = pos.left + 'px';
+            tile.style.top = pos.top + 'px';
+            tile.style.width = pos.width + 'px';
+            tile.style.height = pos.height + 'px';
+            
+            container.appendChild(tile);
+            
+            // اضافه کردن انیمیشن
+            if (isNew) {
+                setTimeout(() => tile.classList.add('tile-appear'), 10);
+            }
+            if (isMerged) {
+                setTimeout(() => tile.classList.add('tile-merge'), 10);
+            }
+            
+            // حذف کلاس انیمیشن بعد از اتمام
+            setTimeout(() => {
+                tile.classList.remove('tile-appear', 'tile-merge');
+            }, 300);
+            
+            return tile;
+        }
+
+        function updateTiles() {
+            const container = document.getElementById('tilesContainer');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    if (board[i][j] !== 0) {
+                        createTile(board[i][j], i, j);
+                    }
+                }
+            }
+        }
+
+        function initBoard() {
+            board = [
+                [0, 0, 0, 0],
+                [0, 0, 0, 0],
+                [0, 0, 0, 0],
+                [0, 0, 0, 0]
+            ];
+            score = 0;
+            gameActive = true;
+            gameWon = false;
+            document.getElementById('score').textContent = '0';
+            document.getElementById('gameOver').classList.remove('show');
+            document.getElementById('gameWin').classList.remove('show');
+            calculateCellSize();
+            addNewTile();
+            addNewTile();
+            updateTiles();
+        }
+
+        function addNewTile() {
+            if (!gameActive) return;
+            
+            let emptyCells = [];
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    if (board[i][j] === 0) {
+                        emptyCells.push({row: i, col: j});
+                    }
+                }
+            }
+            
+            if (emptyCells.length > 0) {
+                let randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                let value = Math.random() < 0.9 ? 2 : 4;
+                board[randomCell.row][randomCell.col] = value;
+                createTile(value, randomCell.row, randomCell.col, true, false);
+            }
+        }
+
+        function move(direction) {
+            if (!gameActive || moving || gameWon) return;
+            
+            moving = true;
+            let moved = false;
+            let merged = Array(4).fill().map(() => Array(4).fill(false));
+            let newBoard = JSON.parse(JSON.stringify(board));
+            
+            if (direction === 'left') {
+                for (let i = 0; i < 4; i++) {
+                    for (let j = 1; j < 4; j++) {
+                        if (newBoard[i][j] !== 0) {
+                            let col = j;
+                            while (col > 0 && (newBoard[i][col-1] === 0 || 
+                                   (newBoard[i][col-1] === newBoard[i][col] && !merged[i][col-1]))) {
+                                if (newBoard[i][col-1] === 0) {
+                                    newBoard[i][col-1] = newBoard[i][col];
+                                    newBoard[i][col] = 0;
+                                    moved = true;
+                                } else if (newBoard[i][col-1] === newBoard[i][col] && !merged[i][col-1]) {
+                                    newBoard[i][col-1] *= 2;
+                                    score += newBoard[i][col-1];
+                                    newBoard[i][col] = 0;
+                                    merged[i][col-1] = true;
+                                    moved = true;
+                                }
+                                col--;
+                            }
+                        }
+                    }
+                }
+            } else if (direction === 'right') {
+                for (let i = 0; i < 4; i++) {
+                    for (let j = 2; j >= 0; j--) {
+                        if (newBoard[i][j] !== 0) {
+                            let col = j;
+                            while (col < 3 && (newBoard[i][col+1] === 0 || 
+                                   (newBoard[i][col+1] === newBoard[i][col] && !merged[i][col+1]))) {
+                                if (newBoard[i][col+1] === 0) {
+                                    newBoard[i][col+1] = newBoard[i][col];
+                                    newBoard[i][col] = 0;
+                                    moved = true;
+                                } else if (newBoard[i][col+1] === newBoard[i][col] && !merged[i][col+1]) {
+                                    newBoard[i][col+1] *= 2;
+                                    score += newBoard[i][col+1];
+                                    newBoard[i][col] = 0;
+                                    merged[i][col+1] = true;
+                                    moved = true;
+                                }
+                                col++;
+                            }
+                        }
+                    }
+                }
+            } else if (direction === 'up') {
+                for (let j = 0; j < 4; j++) {
+                    for (let i = 1; i < 4; i++) {
+                        if (newBoard[i][j] !== 0) {
+                            let row = i;
+                            while (row > 0 && (newBoard[row-1][j] === 0 || 
+                                   (newBoard[row-1][j] === newBoard[row][j] && !merged[row-1][j]))) {
+                                if (newBoard[row-1][j] === 0) {
+                                    newBoard[row-1][j] = newBoard[row][j];
+                                    newBoard[row][j] = 0;
+                                    moved = true;
+                                } else if (newBoard[row-1][j] === newBoard[row][j] && !merged[row-1][j]) {
+                                    newBoard[row-1][j] *= 2;
+                                    score += newBoard[row-1][j];
+                                    newBoard[row][j] = 0;
+                                    merged[row-1][j] = true;
+                                    moved = true;
+                                }
+                                row--;
+                            }
+                        }
+                    }
+                }
+            } else if (direction === 'down') {
+                for (let j = 0; j < 4; j++) {
+                    for (let i = 2; i >= 0; i--) {
+                        if (newBoard[i][j] !== 0) {
+                            let row = i;
+                            while (row < 3 && (newBoard[row+1][j] === 0 || 
+                                   (newBoard[row+1][j] === newBoard[row][j] && !merged[row+1][j]))) {
+                                if (newBoard[row+1][j] === 0) {
+                                    newBoard[row+1][j] = newBoard[row][j];
+                                    newBoard[row][j] = 0;
+                                    moved = true;
+                                } else if (newBoard[row+1][j] === newBoard[row][j] && !merged[row+1][j]) {
+                                    newBoard[row+1][j] *= 2;
+                                    score += newBoard[row+1][j];
+                                    newBoard[row][j] = 0;
+                                    merged[row+1][j] = true;
+                                    moved = true;
+                                }
+                                row++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (moved) {
+                board = newBoard;
+                document.getElementById('score').textContent = score;
+                
+                // بررسی و آپدیت بهترین امتیاز
+                if (score > bestScore) {
+                    bestScore = score;
+                    try {
+                        localStorage.setItem('2048BestScore', bestScore);
+                    } catch (e) {
+                        console.log('خطا در ذخیره localStorage');
+                    }
+                    document.getElementById('bestScore').textContent = bestScore;
+                }
+                
+                // آپدیت تایل‌ها با انیمیشن
+                const container = document.getElementById('tilesContainer');
+                container.innerHTML = '';
+                
+                for (let i = 0; i < 4; i++) {
+                    for (let j = 0; j < 4; j++) {
+                        if (board[i][j] !== 0) {
+                            createTile(board[i][j], i, j, false, merged[i][j]);
+                        }
+                    }
+                }
+                
+                setTimeout(() => {
+                    if (gameActive && !gameWon) {
+                        addNewTile();
+                        checkGameStatus();
+                    }
+                    moving = false;
+                }, 150);
+            } else {
+                moving = false;
+            }
+        }
+
+        function checkGameStatus() {
+            if (!gameActive || gameWon) return;
+            
+            // بررسی برد (رسیدن به 2048)
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    if (board[i][j] === 2048) {
+                        gameActive = false;
+                        gameWon = true;
+                        document.getElementById('winScore').textContent = score;
+                        document.getElementById('gameWin').classList.add('show');
+                        return;
+                    }
+                }
+            }
+            
+            // بررسی باخت (پر شدن همه خانه‌ها و نبود حرکت ممکن)
+            let hasEmpty = false;
+            let canMove = false;
+            
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    if (board[i][j] === 0) {
+                        hasEmpty = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (!hasEmpty) {
+                for (let i = 0; i < 4; i++) {
+                    for (let j = 0; j < 4; j++) {
+                        if (i < 3 && board[i][j] === board[i+1][j]) canMove = true;
+                        if (j < 3 && board[i][j] === board[i][j+1]) canMove = true;
+                    }
+                }
+                
+                if (!canMove) {
+                    gameActive = false;
+                    document.getElementById('finalScore').textContent = score;
+                    document.getElementById('gameOver').classList.add('show');
+                }
+            }
+        }
+
+        function newGame() {
+            board = [
+                [0, 0, 0, 0],
+                [0, 0, 0, 0],
+                [0, 0, 0, 0],
+                [0, 0, 0, 0]
+            ];
+            score = 0;
+            gameActive = true;
+            gameWon = false;
+            moving = false;
+            document.getElementById('score').textContent = '0';
+            document.getElementById('gameOver').classList.remove('show');
+            document.getElementById('gameWin').classList.remove('show');
+            document.getElementById('tilesContainer').innerHTML = '';
+            calculateCellSize();
+            addNewTile();
+            addNewTile();
+        }
+
+        function goBack() {
+            window.location.href = '../index.html';
+        }
+
+        // کنترل با کیبورد
+        document.addEventListener('keydown', (e) => {
+            if (!gameActive) return;
+            
+            switch(e.key) {
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    move('left');
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    move('right');
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    move('up');
+                    break;
+                case 'ArrowDown':
+                    e.preventDefault();
+                    move('down');
+                    break;
+            }
+        });
+
+        // کنترل با swipe برای موبایل
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        document.getElementById('gameBoard').addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        });
+
+        document.getElementById('gameBoard').addEventListener('touchend', (e) => {
+            e.preventDefault();
+            if (!touchStartX || !touchStartY || !gameActive) return;
+
+            let touchEndX = e.changedTouches[0].clientX;
+            let touchEndY = e.changedTouches[0].clientY;
+
+            let dx = touchEndX - touchStartX;
+            let dy = touchEndY - touchStartY;
+
+            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30) {
+                if (dx > 0) move('right');
+                else move('left');
+            } else if (Math.abs(dy) > 30) {
+                if (dy > 0) move('down');
+                else move('up');
+            }
+
+            touchStartX = 0;
+            touchStartY = 0;
+        });
+
+        // تنظیم مجدد موقعیت‌ها هنگام تغییر اندازه صفحه
+        window.addEventListener('resize', () => {
+            calculateCellSize();
+            updateTiles();
+        });
+
+        // شروع بازی
+        initBoard();
+    </script>
+</body>
+</html>
