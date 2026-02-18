@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🐦 Flappy Bird | BrainGames</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazir', 'Tahoma', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 25px;
+            padding: 20px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .back-btn {
+            background: #764ba2;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            min-width: 80px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .back-btn:hover {
+            background: #5a3780;
+            transform: translateY(-2px);
+        }
+
+        .back-btn:active {
+            transform: scale(0.95);
+        }
+
+        h2 {
+            color: #333;
+            font-size: 1.4rem;
+        }
+
+        .game-area {
+            position: relative;
+            width: 100%;
+            background: #4ec0ca;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            touch-action: none; /* جلوگیری از اسکرول هنگام بازی */
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            background: linear-gradient(180deg, #4ec0ca 0%, #56b4c4 100%);
+            cursor: pointer;
+            touch-action: none;
+        }
+
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 15px 0;
+            padding: 12px;
+            background: #f0f0f0;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-item {
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .stat-item span {
+            display: block;
+            background: #764ba2;
+            color: white;
+            padding: 6px 5px;
+            border-radius: 20px;
+            margin-top: 4px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .instructions {
+            text-align: center;
+            color: #666;
+            padding: 10px;
+            background: #f8f8f8;
+            border-radius: 50px;
+            animation: pulse 1.5s infinite;
+            font-size: 0.9rem;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .game-over {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            border-radius: 15px;
+            padding: 15px;
+        }
+
+        .game-over.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .game-over h3 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #ff6b6b;
+            text-shadow: 0 0 10px rgba(255,107,107,0.5);
+        }
+
+        .game-over-stats {
+            width: 100%;
+            margin: 15px 0;
+        }
+
+        .game-over-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 40px;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .game-over-item span:last-child {
+            background: #27ae60;
+            padding: 4px 15px;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.2);
+            width: 80%;
+            max-width: 250px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .restart-btn:active {
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 12px;
+            }
+
+            h2 {
+                font-size: 1.2rem;
+            }
+
+            .back-btn {
+                padding: 6px 15px;
+                font-size: 0.9rem;
+                min-width: 70px;
+            }
+
+            .stats-panel {
+                gap: 5px;
+                padding: 8px;
+            }
+
+            .stat-item {
+                font-size: 0.8rem;
+            }
+
+            .stat-item span {
+                font-size: 1rem;
+                padding: 4px;
+            }
+
+            .game-over h3 {
+                font-size: 1.8rem;
+            }
+
+            .game-over-item {
+                font-size: 0.9rem;
+                padding: 8px 12px;
+            }
+
+            .restart-btn {
+                padding: 10px 25px;
+                font-size: 1rem;
+            }
+        }
+
+        /* برای موبایل‌های خیلی کوچک */
+        @media (max-width: 360px) {
+            .stats-panel {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .stat-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 5px 10px;
+            }
+
+            .stat-item span {
+                display: inline-block;
+                margin-top: 0;
+                min-width: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">🔙 بازگشت</button>
+            <h2>🐦 Flappy Bird</h2>
+        </div>
+
+        <div class="game-area">
+            <canvas id="gameCanvas" width="400" height="600"></canvas>
+            <div class="game-over" id="gameOver">
+                <h3>💔 Game Over</h3>
+                <div class="game-over-stats">
+                    <div class="game-over-item">
+                        <span>🏆 امتیاز</span>
+                        <span id="finalScore">0</span>
+                    </div>
+                    <div class="game-over-item">
+                        <span>⏱️ زمان</span>
+                        <span id="finalTime">0:00</span>
+                    </div>
+                    <div class="game-over-item">
+                        <span>⚡ سرعت</span>
+                        <span id="finalSpeed">2.0x</span>
+                    </div>
+                </div>
+                <button class="restart-btn" onclick="restartGame()">🔄 بازی دوباره</button>
+            </div>
+        </div>
+
+        <div class="stats-panel">
+            <div class="stat-item">
+                🏆 امتیاز
+                <span id="score">0</span>
+            </div>
+            <div class="stat-item">
+                👑 رکورد
+                <span id="highScore">0</span>
+            </div>
+            <div class="stat-item">
+                ⏱️ زمان
+                <span id="timer">0:00</span>
+            </div>
+        </div>
+
+        <div class="instructions">
+            👆 هر جای صفحه بزنی می‌پره
+        </div>
+    </div>
+
+    <script>
+        // تنظیمات کانواس
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // متغیرهای DOM
+        const scoreElement = document.getElementById('score');
+        const highScoreElement = document.getElementById('highScore');
+        const timerElement = document.getElementById('timer');
+        const finalScoreElement = document.getElementById('finalScore');
+        const finalTimeElement = document.getElementById('finalTime');
+        const finalSpeedElement = document.getElementById('finalSpeed');
+        const gameOverlay = document.getElementById('gameOver');
+
+        // اندازه کانواس
+        canvas.width = 400;
+        canvas.height = 600;
+
+        // تصویر پرنده
+        const birdImage = new Image();
+        birdImage.src = 'flappy.png';
+
+        // ثابت‌های بازی
+        const GRAVITY = 0.2;
+        const JUMP = -4.5;
+        const PIPE_WIDTH = 60;
+        const PIPE_GAP = 200;
+        const BASE_SPEED = 2;
+        const SPEED_INCREASE = 0.2;
+        const SPEED_INTERVAL = 18;
+
+        // متغیرهای بازی
+        let gameRunning = false;
+        let score = 0;
+        let highScore = localStorage.getItem('flappyHighScore') || 0;
+        let gameTime = 0;
+        let timerInterval;
+        let currentSpeed = BASE_SPEED;
+        highScoreElement.textContent = highScore;
+
+        // پرنده
+        let bird = {
+            x: 100,
+            y: 250,
+            width: 60,
+            height: 33,
+            velocity: 0
+        };
+
+        // لوله‌ها
+        let pipes = [];
+        let frameCount = 0;
+
+        // تایمر
+        function startTimer() {
+            gameTime = 0;
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                gameTime++;
+                updateTimerDisplay();
+                
+                if (gameTime % SPEED_INTERVAL === 0) {
+                    currentSpeed = BASE_SPEED + (gameTime / SPEED_INTERVAL) * SPEED_INCREASE;
+                    if (currentSpeed > 5) currentSpeed = 5;
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            let minutes = Math.floor(gameTime / 60);
+            let seconds = gameTime % 60;
+            timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+        }
+
+        function createPipe() {
+            let minHeight = 100;
+            let maxHeight = canvas.height - PIPE_GAP - 100;
+            let height = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
+            
+            pipes.push({
+                x: canvas.width,
+                top: height,
+                bottom: height + PIPE_GAP,
+                passed: false
+            });
+        }
+
+        function restartGame() {
+            bird.y = 250;
+            bird.velocity = 0;
+            pipes = [];
+            score = 0;
+            frameCount = 0;
+            gameTime = 0;
+            currentSpeed = BASE_SPEED;
+            gameRunning = true;
+            gameOverlay.classList.remove('show');
+            scoreElement.textContent = score;
+            updateTimerDisplay();
+            
+            stopTimer();
+            startTimer();
+        }
+
+        function update() {
+            if (!gameRunning) return;
+
+            bird.velocity += GRAVITY;
+            bird.y += bird.velocity;
+
+            if (bird.y <= 0) {
+                bird.y = 0;
+                gameOver();
+            }
+            if (bird.y + bird.height >= canvas.height) {
+                bird.y = canvas.height - bird.height;
+                gameOver();
+            }
+
+            frameCount++;
+            if (frameCount % 90 === 0) {
+                createPipe();
+            }
+
+            for (let i = pipes.length - 1; i >= 0; i--) {
+                pipes[i].x -= currentSpeed;
+
+                if (bird.x + bird.width > pipes[i].x && 
+                    bird.x < pipes[i].x + PIPE_WIDTH &&
+                    (bird.y < pipes[i].top || bird.y + bird.height > pipes[i].bottom)) {
+                    gameOver();
+                }
+
+                if (!pipes[i].passed && pipes[i].x + PIPE_WIDTH < bird.x) {
+                    pipes[i].passed = true;
+                    score++;
+                    scoreElement.textContent = score;
+                    
+                    if (score > highScore) {
+                        highScore = score;
+                        localStorage.setItem('flappyHighScore', highScore);
+                        highScoreElement.textContent = highScore;
+                    }
+                }
+
+                if (pipes[i].x + PIPE_WIDTH < 0) {
+                    pipes.splice(i, 1);
+                }
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // ابرهای متحرک
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            for (let i = 0; i < 3; i++) {
+                ctx.beginPath();
+                ctx.arc(100 + i * 150 + (frameCount % 200), 100 + i * 50, 40, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // لوله‌ها
+            pipes.forEach(pipe => {
+                ctx.fillStyle = '#27ae60';
+                ctx.fillRect(pipe.x, 0, PIPE_WIDTH, pipe.top);
+                ctx.fillRect(pipe.x, pipe.bottom, PIPE_WIDTH, canvas.height - pipe.bottom);
+                
+                ctx.fillStyle = '#229954';
+                ctx.fillRect(pipe.x - 5, pipe.top - 30, PIPE_WIDTH + 10, 30);
+                ctx.fillRect(pipe.x - 5, pipe.bottom, PIPE_WIDTH + 10, 30);
+            });
+
+            // پرنده
+            if (birdImage.complete) {
+                ctx.drawImage(birdImage, bird.x, bird.y, bird.width, bird.height);
+            } else {
+                ctx.fillStyle = '#f1c40f';
+                ctx.fillRect(bird.x, bird.y, bird.width, bird.height);
+            }
+
+            // سرعت
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.font = 'bold 16px Vazir';
+            ctx.textAlign = 'left';
+            ctx.fillText(`⚡ ${currentSpeed.toFixed(1)}x`, 10, 30);
+
+            // پیام شروع
+            if (!gameRunning && score === 0) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.font = 'bold 24px Vazir';
+                ctx.textAlign = 'center';
+                ctx.fillText('برای شروع کلیک کن', canvas.width/2, canvas.height/2);
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        function gameOver() {
+            gameRunning = false;
+            stopTimer();
+            
+            finalScoreElement.textContent = score;
+            finalTimeElement.textContent = timerElement.textContent;
+            finalSpeedElement.textContent = currentSpeed.toFixed(1) + 'x';
+            gameOverlay.classList.add('show');
+        }
+
+        function jump() {
+            if (!gameRunning) return;
+            bird.velocity = JUMP;
+        }
+
+        function goBack() {
+            stopTimer();
+            window.location.href = '../index.html';
+        }
+
+        // ========== رویدادهای موبایل و دسکتاپ ==========
+        
+        // کلیک موس
+        canvas.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!gameRunning && score === 0) {
+                gameRunning = true;
+                startTimer();
+            } else {
+                jump();
+            }
+        });
+
+        // لمس برای موبایل
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // جلوگیری از اسکرول
+            if (!gameRunning && score === 0) {
+                gameRunning = true;
+                startTimer();
+            } else {
+                jump();
+            }
+        });
+
+        // جلوگیری از اسکرول با Space
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                if (!gameRunning && score === 0) {
+                    gameRunning = true;
+                    startTimer();
+                } else {
+                    jump();
+                }
+            }
+        });
+
+        // جلوگیری از اسکرول با لمس
+        document.body.addEventListener('touchmove', (e) => {
+            if (gameRunning) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // حلقه بازی
+        function gameLoop() {
+            update();
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+        draw();
+    </script>
+</body>
+</html>

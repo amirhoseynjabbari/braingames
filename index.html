@@ -25,7 +25,7 @@
             background: white;
             border-radius: 30px;
             padding: 40px;
-            max-width: 900px;
+            max-width: 1000px;
             width: 100%;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
@@ -76,8 +76,19 @@
         }
 
         .game-icon {
-            font-size: 4rem;
-            margin-bottom: 15px;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+        }
+
+        .game-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .game-card h3 {
@@ -118,30 +129,6 @@
 
         .tag.hard {
             background: #e74c3c;
-        }
-
-        .btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-decoration: none;
-            padding: 15px 40px;
-            border-radius: 50px;
-            margin-top: 30px;
-            font-size: 1.2rem;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s;
-            width: auto;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn:active {
-            transform: translateY(0);
         }
 
         .footer {
@@ -189,8 +176,10 @@
             }
 
             .game-icon {
-                font-size: 2.5rem;
+                width: 60px;
+                height: 60px;
                 margin-bottom: 0;
+                font-size: 2.5rem;
                 min-width: 60px;
             }
 
@@ -208,12 +197,6 @@
                 justify-content: flex-start;
                 margin-top: 8px;
             }
-
-            .btn {
-                padding: 12px 30px;
-                font-size: 1rem;
-                width: 100%;
-            }
         }
 
         @media (max-width: 480px) {
@@ -230,6 +213,8 @@
             }
 
             .game-icon {
+                width: 50px;
+                height: 50px;
                 font-size: 2rem;
                 min-width: 50px;
             }
@@ -264,7 +249,7 @@
     <div class="container">
         <div class="header">
             <h1>🧠 BrainGames</h1>
-            <p>مجموعه بازی‌های فکری برای تقویت ذهن</p>
+            <p>مجموعه بازی‌های فکری و سرگرم‌کننده</p>
         </div>
 
         <div class="games-grid">
@@ -323,11 +308,32 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Flappy Bird (بازی جدید) -->
+            <div class="game-card" onclick="location.href='games/flappy.html'">
+                <div class="game-icon">
+                    <img src="games/flappy.png" alt="Flappy Bird" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <div style="flex: 1;">
+                    <h3>🐦 Flappy Bird</h3>
+                    <p>بازی کلاسیک و اعتیادآور - تا کجا می‌تونی بری؟</p>
+                    <div class="difficulty-tags">
+                        <span class="tag easy">آسان</span>
+                        <span class="tag medium">متوسط</span>
+                        <span class="tag hard">سخت</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="footer">
             <p>برای شروع، روی هر بازی کلیک کن</p>
         </div>
     </div>
+
+    <script>
+        // اینجا می‌تونی بعداً کدهای جاوااسکریپت رو اضافه کنی
+        console.log('BrainGames Loaded!');
+    </script>
 </body>
 </html>
